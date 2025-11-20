@@ -29,8 +29,27 @@ function isDistractionSite() {
 }
 
 /**
+ * Dismisses the popup with a smooth fade-out animation
+ * @param {HTMLElement} overlay - The overlay element to dismiss
+ */
+function dismissPopup(overlay) {
+  if (!overlay) return;
+
+  console.log('[Snapback] Dismissing popup with fade-out animation...');
+
+  // Add fade-out class to trigger CSS animation
+  overlay.classList.add('distraction-blocker-fadeout');
+
+  // Remove element after animation completes (300ms)
+  setTimeout(() => {
+    overlay.remove();
+    console.log('[Snapback] Popup removed from DOM');
+  }, 300);
+}
+
+/**
  * Shows a popup overlay when a distraction site is detected
- * Includes duplicate prevention to avoid showing multiple popups
+ * Includes duplicate prevention, auto-dismiss, and smooth animations
  */
 function showDistractionPopup() {
   // Check if popup already exists to prevent duplicates
@@ -40,7 +59,16 @@ function showDistractionPopup() {
     return;
   }
 
+  // Check if popup was already shown this session
+  if (window.distractionPopupShown) {
+    console.log('[Snapback] Popup already shown this session, skipping...');
+    return;
+  }
+
   console.log('[Snapback] Creating distraction popup...');
+
+  // Mark popup as shown for this session
+  window.distractionPopupShown = true;
 
   // Create the overlay element
   const overlay = document.createElement('div');
@@ -56,7 +84,7 @@ function showDistractionPopup() {
     </div>
   `;
 
-  // Append to document body
+  // Append to document body (entrance animation handled by CSS)
   document.body.appendChild(overlay);
 
   console.log('[Snapback] Popup displayed successfully');
@@ -65,10 +93,16 @@ function showDistractionPopup() {
   const dismissButton = document.getElementById('distraction-blocker-dismiss');
   if (dismissButton) {
     dismissButton.addEventListener('click', () => {
-      console.log('[Snapback] User dismissed the popup');
-      overlay.remove();
+      console.log('[Snapback] User clicked dismiss button');
+      dismissPopup(overlay);
     });
   }
+
+  // Auto-dismiss after 5 seconds
+  setTimeout(() => {
+    console.log('[Snapback] Auto-dismissing popup after 5 seconds');
+    dismissPopup(overlay);
+  }, 5000);
 }
 
 /**
