@@ -65,19 +65,19 @@ This extension uses a **Content Script** architecture:
 **Goal:** Set up extension files and understand manifest.json
 
 **Tasks:**
-1. Create `manifest.json` with basic metadata
-2. Understand manifest fields:
-   - `manifest_version`: Must be 3 for new extensions
-   - `name`, `version`, `description`: Basic metadata
-   - `icons`: Extension icon shown in Chrome
-   - `content_scripts`: Declares when/where to inject scripts
+1. ✅ Create `manifest.json` with basic metadata
+2. ✅ Understand manifest fields:
+   - ✅ `manifest_version`: Must be 3 for new extensions
+   - ✅ `name`, `version`, `description`: Basic metadata
+   - ✅ `icons`: Extension icon shown in Chrome
+   - ✅ `content_scripts`: Declares when/where to inject scripts
 
 **Learning Points:**
-- Manifest V3 structure
-- Content script injection patterns
-- Permission model basics
+- ✅ Manifest V3 structure
+- ✅ Content script injection patterns
+- ✅ Permission model basics
 
-**Deliverable:** Valid `manifest.json` that Chrome can load
+**Deliverable:** ✅ Valid `manifest.json` that Chrome can load
 
 ---
 
