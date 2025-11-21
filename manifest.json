@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Snapback",
-  "version": "1.0.0",
-  "description": "A gentle reminder to help you refocus when you visit distracting websites",
+  "version": "2.0.0",
+  "description": "A mindful reminder to help you refocus when you visit distracting websites",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -12,11 +12,18 @@
     {
       "matches": ["<all_urls>"],
       "js": ["content.js"],
-      "css": ["styles.css"],
+      "css": ["content.css"],
       "run_at": "document_idle"
     }
   ],
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "tabs"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/*"],
+      "matches": ["<all_urls>"]
+    }
   ]
 }
