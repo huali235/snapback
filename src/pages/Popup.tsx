@@ -76,7 +76,7 @@ export default function Popup({ onClose }: PopupProps) {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-secondary/30 p-4 font-sans">
+    <div className="min-h-screen w-full flex items-center justify-center bg-secondary/30 p-4 font-sans" style={{ pointerEvents: 'auto' }}>
       <Card className="w-full max-w-[400px] min-h-[500px] overflow-hidden relative shadow-2xl border-white/20 bg-white/80 backdrop-blur-xl rounded-3xl flex flex-col">
 
         {/* Header Image Area */}
