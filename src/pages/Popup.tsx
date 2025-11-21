@@ -4,7 +4,8 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Clock, X, ArrowRight, Minimize2 } from "lucide-react";
-import meditationImage from "@assets/images/meditation.png";
+
+const meditationImage = chrome.runtime.getURL("assets/meditation.png");
 
 const QUOTES = [
   "Almost everything will work again if you unplug it for a few minutes, including you.",
