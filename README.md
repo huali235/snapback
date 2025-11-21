@@ -1,176 +1,267 @@
-# Snapback - Focus Reminder Extension
+# Snapback - Mindful Focus Extension
 
-A gentle Chrome browser extension that helps you stay focused by showing a friendly reminder when you visit distracting websites.
+A beautiful Chrome browser extension that helps you stay focused by showing an elegant, mindful reminder when you visit distracting websites. Built with React, TypeScript, and Tailwind CSS.
 
 ## What It Does
 
-Snapback detects when you navigate to common distraction sites (Twitter/X, Instagram, Facebook, Reddit, YouTube) and displays a non-intrusive popup asking: *"Is this what you really want to be doing right now?"*
+Snapback detects when you navigate to common distraction sites (Twitter/X, Instagram, Facebook, Reddit, YouTube, TikTok) and displays an immersive full-screen overlay with:
 
-The reminder helps you become aware of mindless browsing and make intentional choices about how you spend your time.
+- **Mindful Design**: Beautiful meditation-inspired UI with calming imagery
+- **Inspirational Quotes**: Random mindfulness quotes to help you pause and reflect
+- **Focus Timer**: Optional 1-60 minute focus sessions with countdown
+- **Gentle Animations**: Smooth transitions using Framer Motion
+- **Three-State Flow**:
+  1. Initial reminder with option to leave or stay
+  2. Time selection if you choose to stay
+  3. Active timer with countdown display
 
 ## Features
 
-- **Smart Detection**: Automatically recognizes major distraction sites
-- **Gentle Reminders**: Beautiful, non-blocking popup in the top-right corner
-- **Auto-Dismiss**: Popup automatically disappears after 5 seconds
-- **One Reminder Per Session**: Won't nag you repeatedly on the same page
-- **Smooth Animations**: Polished slide-in and fade-out effects
-- **Minimal Permissions**: Only requires activeTab permission
+- Full-screen immersive overlay (not a small popup)
+- Random inspirational quotes from mindfulness philosophy
+- Customizable focus timer (1-60 minutes)
+- Beautiful glassmorphic card design
+- Smooth animations and transitions
+- Meditation imagery for calming effect
+- Modern React + TypeScript architecture
+- Tailwind CSS v4 styling
+- Shadow DOM isolation to prevent style conflicts
+
+## Tech Stack
+
+- **React 19** - UI framework
+- **TypeScript** - Type safety
+- **Tailwind CSS v4** - Styling
+- **Framer Motion** - Animations
+- **Radix UI** - Accessible components
+- **Vite** - Build tool
+- **Chrome Extension Manifest V3** - Extension platform
 
 ## Installation
 
-### Load as Unpacked Extension (Development)
+### For Users (Load as Unpacked Extension)
 
-1. **Download or Clone** this repository to your computer
+1. **Download or Clone** this repository
+   ```bash
+   git clone <repository-url>
+   cd snapback
+   ```
 
-2. **Open Chrome Extensions Page**
-   - Navigate to `chrome://extensions/`
-   - Or click the three-dot menu → More tools → Extensions
+2. **Install Dependencies**
+   ```bash
+   npm install
+   ```
 
-3. **Enable Developer Mode**
-   - Toggle the "Developer mode" switch in the top-right corner
+3. **Build the Extension**
+   ```bash
+   npm run build
+   ```
+   This creates a `dist` folder with the compiled extension.
 
-4. **Load the Extension**
-   - Click "Load unpacked" button
-   - Select the `snapback` folder (the one containing `manifest.json`)
+4. **Load in Chrome**
+   - Open Chrome and navigate to `chrome://extensions/`
+   - Enable "Developer mode" (toggle in top-right)
+   - Click "Load unpacked"
+   - Select the `dist` folder
 
 5. **Verify Installation**
-   - You should see "Snapback" appear in your extensions list
-   - The extension is now active!
+   - You should see "Snapback" in your extensions list
+   - Visit any distraction site to see it in action!
 
 ### Test It Out
 
 1. Visit any distraction site (e.g., https://twitter.com)
-2. You should see a purple popup appear in the top-right corner
-3. Click "Got it, thanks!" or wait 5 seconds for auto-dismiss
-4. Refresh the page to see the popup again
+2. A beautiful full-screen overlay will appear
+3. You can:
+   - Click "Leave this site" to close the tab
+   - Click "Stay for a moment" to set a focus timer
+   - Choose your focus duration (1-60 minutes)
+   - Begin your focus session
 
-## How It Works
+## Development
 
-### Technical Overview
+### Project Structure
 
-- **Content Script**: Runs on every webpage to check the URL
-- **URL Detection**: Compares current URL against hardcoded list of distraction sites
-- **DOM Injection**: Dynamically creates and injects the popup overlay
-- **Session Memory**: Uses `window` flag to prevent multiple popups per page session
-- **CSS Animations**: Smooth entrance and exit transitions
+```
+snapback/
+├── src/
+│   ├── components/
+│   │   └── ui/          # Reusable UI components
+│   │       ├── button.tsx
+│   │       ├── card.tsx
+│   │       └── slider.tsx
+│   ├── content/
+│   │   └── index.tsx    # Content script entry point
+│   ├── lib/
+│   │   └── utils.ts     # Utility functions
+│   ├── pages/
+│   │   └── Popup.tsx    # Main overlay component
+│   └── index.css        # Global styles and Tailwind config
+├── assets/
+│   └── images/          # Images and media
+│       └── meditation.png
+├── icons/               # Extension icons
+│   ├── icon16.png
+│   ├── icon48.png
+│   └── icon128.png
+├── dist/                # Build output (generated)
+├── manifest.json        # Extension manifest
+├── package.json         # Dependencies
+├── vite.config.ts       # Build configuration
+└── tsconfig.json        # TypeScript configuration
+```
 
-### Distraction Sites Detected
+### Available Scripts
 
-Currently hardcoded to detect:
-- twitter.com / x.com
-- instagram.com
-- facebook.com
-- reddit.com
-- youtube.com
+- `npm run build` - Build the extension for production
+- `npm run dev` - Build in watch mode for development
+
+### Making Changes
+
+1. Edit source files in `src/`
+2. Run `npm run build` to rebuild
+3. Go to `chrome://extensions/`
+4. Click the reload icon on Snapback
+5. Refresh any test pages
+
+### How It Works
+
+**Architecture:**
+- **Content Script**: `src/content/index.tsx` runs on every webpage
+- **Shadow DOM**: Styles are isolated to prevent conflicts with host pages
+- **React Components**: Full React app rendered in shadow DOM
+- **State Management**: React hooks for view states and timer
+- **Build Process**: Vite bundles everything into `dist/`
+
+**Content Script Flow:**
+1. Detects if current URL matches distraction site
+2. Creates shadow DOM container
+3. Injects styles into shadow DOM
+4. Renders React app inside shadow DOM
+5. App handles all user interactions
 
 ## Customization
 
 ### Add More Distraction Sites
 
-Edit `content.js` and add to the `DISTRACTION_SITES` array:
+Edit `src/content/index.tsx` and add to the `DISTRACTION_SITES` array:
 
-```javascript
+```typescript
 const DISTRACTION_SITES = [
   'twitter.com',
   'x.com',
   // Add your own:
-  'tiktok.com',
   'linkedin.com',
-  'netflix.com'
+  'netflix.com',
 ];
 ```
 
-### Change Auto-Dismiss Time
+### Add More Quotes
 
-Edit the timeout value in `content.js` (line ~102):
+Edit `src/pages/Popup.tsx` and add to the `QUOTES` array:
 
-```javascript
-// Change 5000 to desired milliseconds (e.g., 10000 = 10 seconds)
-setTimeout(() => {
-  dismissPopup(overlay);
-}, 5000);
+```typescript
+const QUOTES = [
+  "Your new quote here",
+  // ... existing quotes
+];
 ```
 
-### Customize Message
+### Change Timer Range
 
-Edit the HTML in `content.js` (line ~78-85):
+Edit the Slider component in `src/pages/Popup.tsx`:
 
-```javascript
-overlay.innerHTML = `
-  <div class="distraction-blocker-content">
-    <h2>Your custom heading</h2>
-    <p>Your custom message</p>
-    <button id="distraction-blocker-dismiss">Your button text</button>
-  </div>
-`;
+```tsx
+<Slider
+  defaultValue={[5]}
+  max={120}  // Change max to 120 minutes
+  min={1}
+  step={1}
+  // ...
+/>
 ```
 
-### Change Colors
+### Change Colors and Styling
 
-Edit `styles.css` to customize the gradient and colors:
+The design uses Tailwind CSS v4 with custom CSS variables. Edit `src/index.css` to modify:
 
-```css
-/* Change the gradient background */
-background: linear-gradient(135deg, #your-color-1 0%, #your-color-2 100%);
-```
+- Color scheme (light/dark modes)
+- Border radius
+- Font families
+- Spacing
+
+## Distraction Sites Detected
+
+Currently configured to detect:
+- twitter.com / x.com
+- instagram.com
+- facebook.com
+- reddit.com
+- youtube.com
+- tiktok.com
+
+## Permissions
+
+This extension requires:
+- `activeTab` - Access current tab information
+- `tabs` - Close tabs when user chooses to leave
+
+**Privacy**:
+- No data collection
+- No analytics or tracking
+- No network requests
+- Everything runs locally
+- Open source and transparent
 
 ## Troubleshooting
 
-### Popup Doesn't Appear
-
-1. **Check Extension Is Enabled**
-   - Go to `chrome://extensions/`
-   - Ensure Snapback has the toggle switched on
-
-2. **Reload the Extension**
-   - Click the refresh icon on the extension card
-   - Refresh the webpage you're testing
-
-3. **Check Console for Errors**
-   - Right-click on the page → Inspect
-   - Open the Console tab
-   - Look for `[Snapback]` log messages
-
 ### Extension Won't Load
 
-1. **Verify File Structure**
-   ```
-   snapback/
-   ├── manifest.json
-   ├── content.js
-   ├── styles.css
-   └── icons/
-       ├── icon16.png
-       ├── icon48.png
-       └── icon128.png
-   ```
+1. **Check Build Output**
+   - Ensure `npm run build` completed successfully
+   - Verify `dist` folder exists with all files
 
-2. **Check manifest.json**
-   - Ensure it's valid JSON (no trailing commas)
-   - Verify all file paths are correct
+2. **Check Console Errors**
+   - Open Chrome DevTools
+   - Look for errors in Console tab
+   - Check `chrome://extensions/` → Snapback → Errors
 
-3. **Check Console Errors**
-   - `chrome://extensions/` → Details → Errors
-   - Fix any reported issues
+### Overlay Doesn't Appear
 
-## Limitations (MVP)
+1. **Verify Site Detection**
+   - Open DevTools Console
+   - Look for `[Snapback]` log messages
+   - Check if site is in distraction list
 
-This is a minimal viable product with:
-- Hardcoded list of distraction sites (no user customization UI)
-- No settings page
-- No website whitelisting
-- No time-based controls (e.g., only block during work hours)
-- Desktop Chrome only (not mobile)
+2. **Clear Session**
+   - Refresh the page
+   - The overlay only shows once per page session
+
+3. **Check Extension Status**
+   - Go to `chrome://extensions/`
+   - Ensure Snapback is enabled
+   - Try reloading the extension
+
+### Styling Issues
+
+- The extension uses Shadow DOM to isolate styles
+- If styles aren't applying, check browser console for CSS errors
+- Ensure content.css is being loaded in dist folder
+
+## Browser Compatibility
+
+- Chrome (Manifest V3)
+- Other Chromium browsers (Edge, Brave, etc.)
 
 ## Future Enhancements
 
 Planned improvements:
-- ⚙️ Settings page for customizing sites and messages
-- 📊 Usage tracking and statistics
-- ⏰ Time-based blocking schedules
-- ✅ Whitelist for legitimate use cases
-- 🖥️ Native Mac application version
+- User-configurable distraction site list (settings page)
+- Custom quote input
+- Usage statistics and insights
+- Scheduled blocking (time-based rules)
+- Export/import settings
+- Multiple timer presets
 
 ## Privacy
 
@@ -181,56 +272,26 @@ Snapback is completely local and private:
 - ✅ No data leaves your computer
 - ✅ Open source and transparent
 
-## Project Structure
-
-```
-├── manifest.json          # Extension configuration
-├── content.js            # Main logic (URL detection + popup)
-├── styles.css            # Popup styling
-├── icons/                # Extension icons
-│   ├── icon16.png
-│   ├── icon48.png
-│   ├── icon128.png
-│   └── icon.svg          # Source SVG
-├── README.md             # This file
-└── CLAUDE.md             # Development guide
-```
-
-## Development
-
-See `CLAUDE.md` for detailed development phases, learning objectives, and technical architecture.
-
-### Making Changes
-
-1. Edit files in your code editor
-2. Save changes
-3. Go to `chrome://extensions/`
-4. Click reload icon on Snapback extension
-5. Refresh any test pages
-6. Check console for errors
-
-### Debugging
-
-- **Content Script Logs**: Right-click page → Inspect → Console
-- **Extension Errors**: `chrome://extensions/` → Snapback → Errors
-- **Manifest Issues**: Shows error when loading unpacked
+All processing happens locally in your browser. The extension only monitors URLs to detect distraction sites and displays the overlay - nothing is sent to external servers.
 
 ## Credits
 
-Built as a learning project to understand:
-- Chrome Extension Manifest V3
-- Content script architecture
-- DOM manipulation and injection
-- Browser extension permissions model
+Built with:
+- UI inspiration from mindfulness and meditation apps
+- Design system based on shadcn/ui components
+- Meditation imagery for calming effect
 
 ## License
 
 MIT License - Feel free to modify and use as you wish!
 
-## Feedback
+## Contributing
 
-Found a bug or have a suggestion? This is a personal learning project, but feedback is welcome!
+This is a personal project, but suggestions and feedback are welcome! Feel free to:
+- Open issues for bugs or feature requests
+- Fork and experiment
+- Share your customizations
 
 ---
 
-**Remember**: The goal isn't to block websites entirely, but to create awareness and help you make intentional choices about your time. 🎯
+**Remember**: The goal isn't to block websites entirely, but to create awareness and help you make intentional choices about your time and attention. 🧘‍♀️✨
