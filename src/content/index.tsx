@@ -69,23 +69,33 @@ function showSnapbackOverlay() {
   const styleLink = document.createElement('link');
   styleLink.rel = 'stylesheet';
   styleLink.href = chrome.runtime.getURL('content.css');
-  shadowRoot.appendChild(styleLink);
 
-  // Function to close the overlay
-  const closeOverlay = () => {
-    rootDiv.remove();
-    console.log('[Snapback] Overlay closed');
+  // Wait for CSS to load before rendering React
+  styleLink.onload = () => {
+    console.log('[Snapback] CSS loaded, rendering React app...');
+
+    // Function to close the overlay
+    const closeOverlay = () => {
+      rootDiv.remove();
+      console.log('[Snapback] Overlay closed');
+    };
+
+    // Render React app into shadow DOM after CSS is loaded
+    const root = ReactDOM.createRoot(shadowContainer);
+    root.render(
+      <React.StrictMode>
+        <Popup onClose={closeOverlay} />
+      </React.StrictMode>
+    );
+
+    console.log('[Snapback] Overlay displayed successfully');
   };
 
-  // Render React app into shadow DOM
-  const root = ReactDOM.createRoot(shadowContainer);
-  root.render(
-    <React.StrictMode>
-      <Popup onClose={closeOverlay} />
-    </React.StrictMode>
-  );
+  styleLink.onerror = () => {
+    console.error('[Snapback] Failed to load CSS');
+  };
 
-  console.log('[Snapback] Overlay displayed successfully');
+  shadowRoot.appendChild(styleLink);
 }
 
 /**
