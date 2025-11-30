@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import Popup from '@/pages/Popup';
+import MinimizedTimer from '@/components/MinimizedTimer';
 import '@/index.css';
 
 // List of distraction sites to detect
@@ -14,6 +15,14 @@ const DISTRACTION_SITES = [
   'tiktok.com',
 ];
 
+type ViewMode = 'popup' | 'minimized-timer' | 'none';
+
+// Global state to manage current view
+let currentViewMode: ViewMode = 'none';
+let currentRoot: ReactDOM.Root | null = null;
+let currentRootDiv: HTMLDivElement | null = null;
+let timerSeconds: number = 0;
+
 /**
  * Checks if the current URL matches any distraction site
  */
@@ -23,26 +32,9 @@ function isDistractionSite(): boolean {
 }
 
 /**
- * Shows the Snapback overlay with React app
+ * Creates the root container and shadow DOM
  */
-function showSnapbackOverlay() {
-  // Check if overlay already exists
-  const existingOverlay = document.getElementById('snapback-root');
-  if (existingOverlay) {
-    console.log('[Snapback] Overlay already exists, skipping...');
-    return;
-  }
-
-  // Check if already shown this session
-  if ((window as any).snapbackShown) {
-    console.log('[Snapback] Already shown this session, skipping...');
-    return;
-  }
-
-  console.log('[Snapback] Creating overlay...');
-  (window as any).snapbackShown = true;
-
-  // Create root container
+function createRootContainer(mode: ViewMode): { rootDiv: HTMLDivElement; shadowContainer: HTMLDivElement } {
   const rootDiv = document.createElement('div');
   rootDiv.id = 'snapback-root';
   rootDiv.style.cssText = `
@@ -68,39 +60,114 @@ function showSnapbackOverlay() {
   // Create a container inside shadow DOM
   const shadowContainer = document.createElement('div');
   shadowContainer.id = 'shadow-container';
+
+  // Add mode class to container for conditional styling
+  if (mode === 'minimized-timer') {
+    shadowContainer.classList.add('minimized-mode');
+  }
+
   shadowRoot.appendChild(shadowContainer);
 
   // Inject styles into shadow DOM
   const styleLink = document.createElement('link');
   styleLink.rel = 'stylesheet';
   styleLink.href = chrome.runtime.getURL('content.css');
+  shadowRoot.appendChild(styleLink);
 
-  // Wait for CSS to load before rendering React
-  styleLink.onload = () => {
-    console.log('[Snapback] CSS loaded, rendering React app...');
+  return { rootDiv, shadowContainer };
+}
 
-    // Function to close the overlay
-    const closeOverlay = () => {
-      rootDiv.remove();
-      console.log('[Snapback] Overlay closed');
-    };
+/**
+ * Removes the current overlay
+ */
+function removeOverlay() {
+  if (currentRoot) {
+    currentRoot.unmount();
+    currentRoot = null;
+  }
+  if (currentRootDiv) {
+    currentRootDiv.remove();
+    currentRootDiv = null;
+  }
+  currentViewMode = 'none';
+  console.log('[Snapback] Overlay removed');
+}
 
-    // Render React app into shadow DOM after CSS is loaded
+/**
+ * Shows the full popup overlay
+ */
+function showPopup() {
+  // Remove existing overlay if any
+  if (currentViewMode !== 'none') {
+    removeOverlay();
+  }
+
+  console.log('[Snapback] Creating full popup...');
+  currentViewMode = 'popup';
+
+  const { rootDiv, shadowContainer } = createRootContainer('popup');
+  currentRootDiv = rootDiv;
+
+  // Wait a tick for styles to load
+  setTimeout(() => {
     const root = ReactDOM.createRoot(shadowContainer);
+    currentRoot = root;
+
     root.render(
       <React.StrictMode>
-        <Popup onClose={closeOverlay} />
+        <Popup
+          onStartTimer={(seconds: number) => {
+            timerSeconds = seconds;
+            showMinimizedTimer();
+          }}
+        />
       </React.StrictMode>
     );
 
-    console.log('[Snapback] Overlay displayed successfully');
-  };
+    console.log('[Snapback] Full popup displayed');
+  }, 100);
+}
 
-  styleLink.onerror = () => {
-    console.error('[Snapback] Failed to load CSS');
-  };
+/**
+ * Shows the minimized timer
+ */
+function showMinimizedTimer() {
+  // Remove existing overlay if any
+  if (currentViewMode !== 'none') {
+    removeOverlay();
+  }
 
-  shadowRoot.appendChild(styleLink);
+  console.log('[Snapback] Creating minimized timer...');
+  currentViewMode = 'minimized-timer';
+
+  const { rootDiv, shadowContainer } = createRootContainer('minimized-timer');
+  currentRootDiv = rootDiv;
+
+  // Wait a tick for styles to load
+  setTimeout(() => {
+    const root = ReactDOM.createRoot(shadowContainer);
+    currentRoot = root;
+
+    root.render(
+      <React.StrictMode>
+        <MinimizedTimer
+          initialSeconds={timerSeconds}
+          onExpire={() => {
+            console.log('[Snapback] Timer expired, showing popup...');
+            showPopup();
+          }}
+          onMaximize={() => {
+            // For now, just keep the timer running in minimized mode
+            // Could expand to show full screen timer in future
+            console.log('[Snapback] Maximize clicked (not implemented)');
+          }}
+          onCancel={removeOverlay}
+        />
+      </React.StrictMode>
+    );
+
+    console.log('[Snapback] Minimized timer displayed');
+  }, 100);
 }
 
 /**
@@ -111,7 +178,15 @@ function init() {
 
   if (isDistractionSite()) {
     console.log('[Snapback] Distraction site detected!');
-    showSnapbackOverlay();
+
+    // Check if already shown this session
+    if ((window as any).snapbackShown) {
+      console.log('[Snapback] Already shown this session, skipping...');
+      return;
+    }
+
+    (window as any).snapbackShown = true;
+    showPopup();
   } else {
     console.log('[Snapback] Not a distraction site');
   }
