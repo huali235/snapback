@@ -93,10 +93,28 @@
     font-family: var(--font-sans) !important;
     color: hsl(var(--foreground)) !important;
     background-color: hsl(var(--background)) !important;
+    line-height: 1.5 !important;
+    letter-spacing: normal !important;
   }
 
   #shadow-container * {
     font-family: inherit !important;
+    line-height: inherit;
+    letter-spacing: inherit;
+  }
+
+  /* Reset common properties that might leak from host page */
+  #shadow-container h1,
+  #shadow-container h2,
+  #shadow-container h3,
+  #shadow-container p,
+  #shadow-container button,
+  #shadow-container div {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    vertical-align: baseline;
   }
 }
 
@@ -106,8 +124,19 @@
   font-family: var(--font-sans) !important;
 }
 
-#snapback-root * {
-  box-sizing: border-box;
+#snapback-root *,
+#snapback-root *::before,
+#snapback-root *::after {
+  box-sizing: border-box !important;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure consistent font rendering */
+#snapback-root {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* Shadow container must not use 'all: initial' as it would reset our CSS variables */
@@ -131,4 +160,20 @@
 #shadow-container *::before,
 #shadow-container *::after {
   box-sizing: border-box;
+}
+
+/* Force consistent sizing for all elements */
+#shadow-container * {
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+}
+
+/* Ensure buttons and inputs don't inherit weird styles */
+#shadow-container button,
+#shadow-container input,
+#shadow-container select {
+  font-family: inherit !important;
+  font-size: inherit;
+  line-height: inherit;
 }
