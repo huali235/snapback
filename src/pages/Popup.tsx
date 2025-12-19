@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
@@ -7,9 +7,7 @@ import { X, ArrowRight } from "lucide-react";
 
 const meditationImage = chrome.runtime.getURL("assets/images/meditation.png");
 
-const QUOTES = [
-  " Open your eyes and take heed, and prepare for this journey, for you have been allotted a fixed number of breaths. This lifespan, which has been leased to you, will soon be recalled.",
-];
+const QUOTE = "Open your eyes and take heed, and prepare for this journey, for you have been allotted a fixed number of breaths. This lifespan, which has been leased to you, will soon be recalled.";
 
 type ViewState = "idle" | "selecting_time";
 
@@ -19,12 +17,7 @@ interface PopupProps {
 
 export default function Popup({ onStartTimer }: PopupProps) {
   const [viewState, setViewState] = useState<ViewState>("idle");
-  const [quote, setQuote] = useState(QUOTES[0]);
   const [minutes, setMinutes] = useState([5]);
-
-  useEffect(() => {
-    setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
-  }, []);
 
   const handleLeave = () => {
     // Send message to background script to close the current tab
@@ -110,7 +103,7 @@ export default function Popup({ onStartTimer }: PopupProps) {
                       className="text-muted-foreground text-lg leading-relaxed font-light italic"
                       style={{ fontSize: '1.125rem', lineHeight: '1.75rem', fontWeight: 300 }}
                     >
-                      "{quote}"
+                      "{QUOTE}"
                     </p>
                   </div>
                 </div>
