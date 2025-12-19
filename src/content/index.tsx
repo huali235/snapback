@@ -13,6 +13,7 @@ const DISTRACTION_SITES = [
   'reddit.com',
   'youtube.com',
   'tiktok.com',
+  'news.google.com'
 ];
 
 type ViewMode = 'popup' | 'minimized-timer' | 'none';
