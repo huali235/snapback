@@ -8,11 +8,7 @@ import { X, ArrowRight } from "lucide-react";
 const meditationImage = chrome.runtime.getURL("assets/images/meditation.png");
 
 const QUOTES = [
-  "Almost everything will work again if you unplug it for a few minutes, including you.",
-  "Quiet the mind, and the soul will speak.",
-  "Do not dwell in the past, do not dream of the future, concentrate the mind on the present moment.",
-  "Nature does not hurry, yet everything is accomplished.",
-  "The present moment is the only time over which we have dominion.",
+  " Open your eyes and take heed, and prepare for this journey, for you have been allotted a fixed number of breaths. This lifespan, which has been leased to you, will soon be recalled.",
 ];
 
 type ViewState = "idle" | "selecting_time";
