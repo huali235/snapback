@@ -156,11 +156,6 @@ function showMinimizedTimer() {
             console.log('[Snapback] Timer expired, showing popup...');
             showPopup();
           }}
-          onMaximize={() => {
-            // For now, just keep the timer running in minimized mode
-            // Could expand to show full screen timer in future
-            console.log('[Snapback] Maximize clicked (not implemented)');
-          }}
           onCancel={removeOverlay}
         />
       </React.StrictMode>
