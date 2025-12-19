@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Clock, X } from "lucide-react";
+import { Clock, Maximize2, X } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 interface MinimizedTimerProps {
   initialSeconds: number;
   onExpire: () => void;
+  onMaximize: () => void;
   onCancel: () => void;
 }
 
 export default function MinimizedTimer({
   initialSeconds,
   onExpire,
+  onMaximize,
   onCancel,
 }: MinimizedTimerProps) {
   const [timeLeft, setTimeLeft] = useState(initialSeconds);
@@ -44,19 +46,10 @@ export default function MinimizedTimer({
 
   return (
     <motion.div
-      drag
-      dragMomentum={false}
-      dragElastic={0}
-      dragConstraints={{
-        top: -9999,
-        left: -9999,
-        right: 9999,
-        bottom: 9999,
-      }}
       initial={{ opacity: 0, x: 50, y: -50 }}
       animate={{ opacity: 1, x: 0, y: 0 }}
       exit={{ opacity: 0, x: 50, y: -50 }}
-      className="fixed top-6 right-6 cursor-move"
+      className="fixed top-6 right-6"
       style={{ pointerEvents: 'auto', zIndex: 2147483647 }}
     >
       <Card className="bg-white/95 backdrop-blur-xl shadow-2xl border-white/50 rounded-2xl overflow-hidden min-w-[200px]">
@@ -79,15 +72,26 @@ export default function MinimizedTimer({
               </div>
               <span className="text-xs font-medium text-muted-foreground">Focus Mode</span>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onCancel}
-              className="h-7 w-7 hover:bg-destructive/10 hover:text-destructive"
-              title="Cancel timer"
-            >
-              <X className="h-3.5 w-3.5" />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onMaximize}
+                className="h-7 w-7 hover:bg-secondary/50"
+                title="Maximize"
+              >
+                <Maximize2 className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onCancel}
+                className="h-7 w-7 hover:bg-destructive/10 hover:text-destructive"
+                title="Cancel timer"
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            </div>
           </div>
 
           {/* Timer Display */}

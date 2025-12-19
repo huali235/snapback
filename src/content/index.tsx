@@ -13,7 +13,6 @@ const DISTRACTION_SITES = [
   'reddit.com',
   'youtube.com',
   'tiktok.com',
-  'news.google.com'
 ];
 
 type ViewMode = 'popup' | 'minimized-timer' | 'none';
@@ -156,6 +155,11 @@ function showMinimizedTimer() {
           onExpire={() => {
             console.log('[Snapback] Timer expired, showing popup...');
             showPopup();
+          }}
+          onMaximize={() => {
+            // For now, just keep the timer running in minimized mode
+            // Could expand to show full screen timer in future
+            console.log('[Snapback] Maximize clicked (not implemented)');
           }}
           onCancel={removeOverlay}
         />

@@ -1,4 +1,4 @@
-import { useState} from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,9 @@ import { X, ArrowRight } from "lucide-react";
 
 const meditationImage = chrome.runtime.getURL("assets/images/meditation.png");
 
-const QUOTE = "Open your eyes and take heed, and prepare for this journey, for you have been allotted a fixed number of breaths. This lifespan, which has been leased to you, will soon be recalled.";
+const QUOTES = [
+  " Open your eyes and take heed, and prepare for this journey, for you have been allotted a fixed number of breaths. This lifespan, which has been leased to you, will soon be recalled.",
+];
 
 type ViewState = "idle" | "selecting_time";
 
@@ -17,7 +19,12 @@ interface PopupProps {
 
 export default function Popup({ onStartTimer }: PopupProps) {
   const [viewState, setViewState] = useState<ViewState>("idle");
+  const [quote, setQuote] = useState(QUOTES[0]);
   const [minutes, setMinutes] = useState([5]);
+
+  useEffect(() => {
+    setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+  }, []);
 
   const handleLeave = () => {
     // Send message to background script to close the current tab
@@ -103,7 +110,7 @@ export default function Popup({ onStartTimer }: PopupProps) {
                       className="text-muted-foreground text-lg leading-relaxed font-light italic"
                       style={{ fontSize: '1.125rem', lineHeight: '1.75rem', fontWeight: 300 }}
                     >
-                      "{QUOTE}"
+                      "{quote}"
                     </p>
                   </div>
                 </div>
@@ -111,7 +118,7 @@ export default function Popup({ onStartTimer }: PopupProps) {
                 <div className="w-full space-y-3 mt-8">
                   <Button
                     onClick={handleLeave}
-                    className="w-full h-12 text-base font-medium rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer"
+                    className="w-full h-12 text-base font-medium rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 group"
                     style={{ height: '48px', fontSize: '1rem', fontWeight: 500 }}
                   >
                     <X className="mr-2 h-4 w-4 group-hover:rotate-90 transition-transform duration-300" />
@@ -121,7 +128,7 @@ export default function Popup({ onStartTimer }: PopupProps) {
                   <Button
                     variant="ghost"
                     onClick={handleStay}
-                    className="w-full h-12 text-base font-medium text-muted-foreground hover:text-primary hover:bg-secondary/50 rounded-xl transition-all cursor-pointer"
+                    className="w-full h-12 text-base font-medium text-muted-foreground hover:text-primary hover:bg-secondary/50 rounded-xl transition-all"
                     style={{ height: '48px', fontSize: '1rem', fontWeight: 500 }}
                   >
                     Stay for a moment
@@ -175,14 +182,14 @@ export default function Popup({ onStartTimer }: PopupProps) {
                   <Button
                     variant="outline"
                     onClick={() => setViewState("idle")}
-                    className="flex-1 h-12 rounded-xl border-muted-foreground/20 cursor-pointer"
+                    className="flex-1 h-12 rounded-xl border-muted-foreground/20"
                     style={{ height: '48px', fontSize: '1rem', fontWeight: 500 }}
                   >
                     Cancel
                   </Button>
                   <Button
                     onClick={startTimer}
-                    className="flex-[2] h-12 rounded-xl bg-primary text-primary-foreground shadow-lg cursor-pointer"
+                    className="flex-[2] h-12 rounded-xl bg-primary text-primary-foreground shadow-lg"
                     style={{ height: '48px', fontSize: '1rem', fontWeight: 500 }}
                   >
                     Begin Focus <ArrowRight className="ml-2 h-4 w-4" />
