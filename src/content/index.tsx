@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import Popup from '@/pages/Popup';
 import MinimizedTimer from '@/components/MinimizedTimer';
+import { runtime } from '@/lib/browser-api';
 import '@/index.css';
 
 // List of distraction sites to detect
@@ -72,7 +73,17 @@ function createRootContainer(mode: ViewMode): { rootDiv: HTMLDivElement; shadowC
   // Inject styles into shadow DOM
   const styleLink = document.createElement('link');
   styleLink.rel = 'stylesheet';
-  styleLink.href = chrome.runtime.getURL('content.css');
+  styleLink.href = runtime.getURL('content.css');
+
+  // Add load handlers for Safari compatibility
+  styleLink.onload = () => {
+    console.log('[Snapback] Styles loaded successfully in Shadow DOM');
+  };
+
+  styleLink.onerror = () => {
+    console.error('[Snapback] Failed to load styles - extension may not display correctly');
+  };
+
   shadowRoot.appendChild(styleLink);
 
   return { rootDiv, shadowContainer };

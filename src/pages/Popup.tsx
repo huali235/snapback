@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { runtime } from "@/lib/browser-api";
 
-// const meditationImage = chrome.runtime.getURL("assets/images/meditation.png");
+// const meditationImage = runtime.getURL("assets/images/meditation.png");
 
 const QUOTE = "Open your eyes and take heed, and prepare for this journey, for you have been allotted a fixed number of breaths. This lifespan, which has been leased to you, will soon be recalled.";
 
@@ -19,7 +20,7 @@ export default function Popup({ onStartTimer }: PopupProps) {
 
   const handleLeave = () => {
     // Send message to background script to close the current tab
-    chrome.runtime.sendMessage({ action: 'closeTab' }, (response) => {
+    runtime.sendMessage({ action: 'closeTab' }, (response) => {
       if (response?.success) {
         console.log('[Snapback] Tab close request sent successfully');
       } else {
