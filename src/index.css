@@ -113,6 +113,7 @@
     margin: 0;
     padding: 0;
     border: 0;
+    font-size: 100%;
     vertical-align: baseline;
   }
 }
@@ -161,9 +162,18 @@
   box-sizing: border-box;
 }
 
+/* Force consistent sizing for all elements */
+#shadow-container * {
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+}
+
 /* Ensure buttons and inputs don't inherit weird styles */
 #shadow-container button,
 #shadow-container input,
 #shadow-container select {
   font-family: inherit !important;
+  font-size: inherit;
+  line-height: inherit;
 }

@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { Clock, X } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface MinimizedTimerProps {
   initialSeconds: number;
@@ -40,13 +43,30 @@ export default function MinimizedTimer({
   };
 
   return (
-    <div className="fixed top-6 right-6 animate-slideIn pointer-events-auto z-[100]">
+    <motion.div
+      drag
+      dragMomentum={false}
+      dragElastic={0}
+      dragConstraints={{
+        top: -9999,
+        left: -9999,
+        right: 9999,
+        bottom: 9999,
+      }}
+      initial={{ opacity: 0, x: 50, y: -50 }}
+      animate={{ opacity: 1, x: 0, y: 0 }}
+      exit={{ opacity: 0, x: 50, y: -50 }}
+      className="fixed top-6 right-6 cursor-move"
+      style={{ pointerEvents: 'auto', zIndex: 2147483647 }}
+    >
       <Card className="bg-white/95 backdrop-blur-xl shadow-2xl border-white/50 rounded-2xl overflow-hidden min-w-[200px]">
         {/* Progress Bar */}
         <div className="h-1 bg-secondary relative overflow-hidden">
-          <div
-            className="absolute inset-y-0 left-0 bg-primary transition-all duration-300"
-            style={{ width: `${getProgress()}%` }}
+          <motion.div
+            className="absolute inset-y-0 left-0 bg-primary"
+            initial={{ width: "0%" }}
+            animate={{ width: `${getProgress()}%` }}
+            transition={{ duration: 0.3 }}
           />
         </div>
 
@@ -55,21 +75,19 @@ export default function MinimizedTimer({
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <div className="bg-primary/10 p-1.5 rounded-lg">
-                <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <Clock className="w-4 h-4 text-primary" />
               </div>
               <span className="text-xs font-medium text-muted-foreground">Focus Mode</span>
             </div>
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={onCancel}
-              className="h-7 w-7 rounded-md hover:bg-destructive/10 hover:text-destructive transition-colors flex items-center justify-center cursor-pointer"
+              className="h-7 w-7 hover:bg-destructive/10 hover:text-destructive"
               title="Cancel timer"
             >
-              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+              <X className="h-3.5 w-3.5" />
+            </Button>
           </div>
 
           {/* Timer Display */}
@@ -81,6 +99,6 @@ export default function MinimizedTimer({
           </div>
         </div>
       </Card>
-    </div>
+    </motion.div>
   );
 }
