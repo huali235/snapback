@@ -6,8 +6,6 @@
   "scripts": {
     "dev": "vite build --watch --mode development",
     "build": "tsc && vite build",
-    "build:safari": "tsc && vite build --config vite.config.safari.ts",
-    "convert:safari": "npm run build:safari && xcrun safari-web-extension-converter ./dist-safari --app-name Snapback --macos-only --copy-resources",
     "preview": "vite preview"
   },
   "dependencies": {

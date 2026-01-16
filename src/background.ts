@@ -1,13 +1,11 @@
 // Background service worker for Snapback extension
 // Handles tab management since content scripts cannot use chrome.tabs API
 
-import { runtime, tabs } from '@/lib/browser-api';
-
-runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'closeTab') {
     // Close the tab that sent the message
     if (sender.tab?.id) {
-      tabs.remove(sender.tab.id)
+      chrome.tabs.remove(sender.tab.id)
         .then(() => {
           console.log('[Snapback Background] Tab closed successfully');
           sendResponse({ success: true });
