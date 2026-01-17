@@ -2,19 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import Popup from '@/pages/Popup';
 import MinimizedTimer from '@/components/MinimizedTimer';
+import { getDistractionSites } from '@/lib/storage';
 import '@/index.css';
-
-// List of distraction sites to detect
-const DISTRACTION_SITES = [
-  'twitter.com',
-  'x.com',
-  'instagram.com',
-  'facebook.com',
-  'reddit.com',
-  'youtube.com',
-  'tiktok.com',
-  'news.google.com'
-];
 
 type ViewMode = 'popup' | 'minimized-timer' | 'none';
 
@@ -27,9 +16,9 @@ let timerSeconds: number = 0;
 /**
  * Checks if the current URL matches any distraction site
  */
-function isDistractionSite(): boolean {
+function isDistractionSite(sites: string[]): boolean {
   const currentUrl = window.location.href.toLowerCase();
-  return DISTRACTION_SITES.some(site => currentUrl.includes(site));
+  return sites.some(site => currentUrl.includes(site));
 }
 
 /**
@@ -169,10 +158,13 @@ function showMinimizedTimer() {
 /**
  * Main initialization
  */
-function init() {
+async function init() {
   console.log('[Snapback] Content script loaded on:', window.location.href);
 
-  if (isDistractionSite()) {
+  // Load distraction sites from storage
+  const DISTRACTION_SITES = await getDistractionSites();
+
+  if (isDistractionSite(DISTRACTION_SITES)) {
     console.log('[Snapback] Distraction site detected!');
 
     // Check if already shown this session
