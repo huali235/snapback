@@ -65,17 +65,10 @@ export default defineConfig({
       },
       output: {
         entryFileNames: '[name].js',
-        chunkFileNames: 'chunks/[name].js',
-        assetFileNames: (assetInfo) => {
-          if (assetInfo.name === 'content.css') {
-            return '[name].[ext]';
-          }
-          return 'assets/[name].[ext]';
-        },
+        assetFileNames: '[name].[ext]',
+        // This is the key: inline all dependencies into each output file
+        inlineDynamicImports: false,
       },
     },
-  },
-  define: {
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
   },
 });
