@@ -23,5 +23,14 @@
   "permissions": [
     "activeTab",
     "storage"
-  ]
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["content.css", "*.woff2"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self';"
+  }
 }
