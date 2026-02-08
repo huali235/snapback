@@ -1,8 +1,4 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Clock, X } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 interface MinimizedTimerProps {
   initialSeconds: number;
@@ -13,7 +9,6 @@ interface MinimizedTimerProps {
 export default function MinimizedTimer({
   initialSeconds,
   onExpire,
-  onCancel,
 }: MinimizedTimerProps) {
   const [timeLeft, setTimeLeft] = useState(initialSeconds);
 
@@ -43,62 +38,25 @@ export default function MinimizedTimer({
   };
 
   return (
-    <motion.div
-      drag
-      dragMomentum={false}
-      dragElastic={0}
-      dragConstraints={{
-        top: -9999,
-        left: -9999,
-        right: 9999,
-        bottom: 9999,
-      }}
-      initial={{ opacity: 0, x: 50, y: -50 }}
-      animate={{ opacity: 1, x: 0, y: 0 }}
-      exit={{ opacity: 0, x: 50, y: -50 }}
-      className="fixed top-6 right-6 cursor-move"
+    <div
+      className="minimized-timer"
       style={{ pointerEvents: 'auto', zIndex: 2147483647 }}
     >
-      <Card className="bg-white/95 backdrop-blur-xl shadow-2xl border-white/50 rounded-2xl overflow-hidden min-w-[200px]">
-        {/* Progress Bar */}
-        <div className="h-1 bg-secondary relative overflow-hidden">
-          <motion.div
-            className="absolute inset-y-0 left-0 bg-primary"
-            initial={{ width: "0%" }}
-            animate={{ width: `${getProgress()}%` }}
-            transition={{ duration: 0.3 }}
-          />
-        </div>
+      {/* Progress bar */}
+      <div className="timer-progress-track">
+        <div
+          className="timer-progress-bar"
+          style={{ width: `${getProgress()}%` }}
+        />
+      </div>
 
-        <div className="p-4">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <div className="bg-primary/10 p-1.5 rounded-lg">
-                <Clock className="w-4 h-4 text-primary" />
-              </div>
-              <span className="text-xs font-medium text-muted-foreground">Focus Mode</span>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onCancel}
-              className="h-7 w-7 hover:bg-destructive/10 hover:text-destructive"
-              title="Cancel timer"
-            >
-              <X className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-
-          {/* Timer Display */}
-          <div className="text-center">
-            <div className="text-3xl font-light font-mono tabular-nums text-primary tracking-wide">
-              {formatTime(timeLeft)}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">remaining</p>
-          </div>
+      <div className="timer-content">
+        <span className="timer-label">Focus Mode</span>
+        <div className="timer-display">
+          {formatTime(timeLeft)}
         </div>
-      </Card>
-    </motion.div>
+        <span className="timer-sublabel">remaining</span>
+      </div>
+    </div>
   );
 }

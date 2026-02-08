@@ -24,9 +24,18 @@ function isDistractionSite(sites: string[]): boolean {
 /**
  * Creates the root container and shadow DOM
  */
-function createRootContainer(mode: ViewMode): { rootDiv: HTMLDivElement; shadowContainer: HTMLDivElement } {
+function createRootContainer(mode: ViewMode): { rootDiv: HTMLDivElement; shadowContainer: HTMLDivElement; styleLink: HTMLLinkElement } {
   const rootDiv = document.createElement('div');
   rootDiv.id = 'snapback-root';
+
+  // For popup mode, we need a backdrop. For minimized timer, transparent
+  const backgroundStyle = mode === 'popup'
+    ? 'rgba(44, 38, 33, 0.95) !important'
+    : 'none !important';
+  const backdropFilterStyle = mode === 'popup'
+    ? 'blur(8px) !important'
+    : 'none !important';
+
   rootDiv.style.cssText = `
     position: fixed !important;
     top: 0 !important;
@@ -38,7 +47,9 @@ function createRootContainer(mode: ViewMode): { rootDiv: HTMLDivElement; shadowC
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;
-    background: none !important;
+    background: ${backgroundStyle};
+    backdrop-filter: ${backdropFilterStyle};
+    -webkit-backdrop-filter: ${backdropFilterStyle};
     pointer-events: none !important;
   `;
 
@@ -58,13 +69,13 @@ function createRootContainer(mode: ViewMode): { rootDiv: HTMLDivElement; shadowC
 
   shadowRoot.appendChild(shadowContainer);
 
-  // Inject styles into shadow DOM
+  // Inject styles into shadow DOM - return promise that resolves when loaded
   const styleLink = document.createElement('link');
   styleLink.rel = 'stylesheet';
   styleLink.href = chrome.runtime.getURL('content.css');
   shadowRoot.appendChild(styleLink);
 
-  return { rootDiv, shadowContainer };
+  return { rootDiv, shadowContainer, styleLink };
 }
 
 /**
@@ -95,11 +106,11 @@ function showPopup() {
   console.log('[Snapback] Creating full popup...');
   currentViewMode = 'popup';
 
-  const { rootDiv, shadowContainer } = createRootContainer('popup');
+  const { rootDiv, shadowContainer, styleLink } = createRootContainer('popup');
   currentRootDiv = rootDiv;
 
-  // Wait a tick for styles to load
-  setTimeout(() => {
+  // Wait for styles to load before rendering
+  styleLink.addEventListener('load', () => {
     const root = ReactDOM.createRoot(shadowContainer);
     currentRoot = root;
 
@@ -115,7 +126,28 @@ function showPopup() {
     );
 
     console.log('[Snapback] Full popup displayed');
-  }, 100);
+  });
+
+  // Fallback timeout in case load event doesn't fire
+  setTimeout(() => {
+    if (!currentRoot) {
+      const root = ReactDOM.createRoot(shadowContainer);
+      currentRoot = root;
+
+      root.render(
+        <React.StrictMode>
+          <Popup
+            onStartTimer={(seconds: number) => {
+              timerSeconds = seconds;
+              showMinimizedTimer();
+            }}
+          />
+        </React.StrictMode>
+      );
+
+      console.log('[Snapback] Full popup displayed (fallback)');
+    }
+  }, 500);
 }
 
 /**
@@ -130,11 +162,11 @@ function showMinimizedTimer() {
   console.log('[Snapback] Creating minimized timer...');
   currentViewMode = 'minimized-timer';
 
-  const { rootDiv, shadowContainer } = createRootContainer('minimized-timer');
+  const { rootDiv, shadowContainer, styleLink } = createRootContainer('minimized-timer');
   currentRootDiv = rootDiv;
 
-  // Wait a tick for styles to load
-  setTimeout(() => {
+  // Wait for styles to load before rendering
+  styleLink.addEventListener('load', () => {
     const root = ReactDOM.createRoot(shadowContainer);
     currentRoot = root;
 
@@ -152,7 +184,30 @@ function showMinimizedTimer() {
     );
 
     console.log('[Snapback] Minimized timer displayed');
-  }, 100);
+  });
+
+  // Fallback timeout in case load event doesn't fire
+  setTimeout(() => {
+    if (!currentRoot) {
+      const root = ReactDOM.createRoot(shadowContainer);
+      currentRoot = root;
+
+      root.render(
+        <React.StrictMode>
+          <MinimizedTimer
+            initialSeconds={timerSeconds}
+            onExpire={() => {
+              console.log('[Snapback] Timer expired, showing popup...');
+              showPopup();
+            }}
+            onCancel={removeOverlay}
+          />
+        </React.StrictMode>
+      );
+
+      console.log('[Snapback] Minimized timer displayed (fallback)');
+    }
+  }, 500);
 }
 
 /**

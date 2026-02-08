@@ -1,5 +1,54 @@
 @import "tailwindcss";
 
+/* Local font-face declarations (bundled with extension to avoid CSP issues) */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('./fonts/cormorant-garamond-300-latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/cormorant-garamond-400-latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/cormorant-garamond-400-italic-latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/cormorant-garamond-600-latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/montserrat-400-latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./fonts/montserrat-500-latin.woff2') format('woff2');
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -55,6 +104,20 @@
   --input: 214.3 31.8% 91.4%;
   --ring: 222.2 84% 4.9%;
   --radius: 1rem;
+
+  /* New artistic color palette */
+  --c-deep-earth: #2C2621;
+  --c-sand: #E6DED3;
+  --c-charcoal: #1A1816;
+  --c-peach: #EBC5A5;
+  --c-peach-light: #F7E6D6;
+
+  /* Typography */
+  --f-serif: 'Cormorant Garamond', serif;
+  --f-sans: 'Montserrat', sans-serif;
+
+  /* Custom easing */
+  --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
 .dark {
@@ -89,16 +152,15 @@
 
   /* Shadow DOM specific base styles */
   #shadow-container {
-    @apply font-sans antialiased bg-background text-foreground;
-    font-family: var(--font-sans) !important;
-    color: hsl(var(--foreground)) !important;
-    background-color: hsl(var(--background)) !important;
-    line-height: 1.5 !important;
-    letter-spacing: normal !important;
+    -webkit-font-smoothing: antialiased;
+    font-family: var(--f-sans), var(--font-sans), sans-serif;
+    color: hsl(var(--foreground));
+    background-color: transparent;
+    line-height: 1.5;
+    letter-spacing: normal;
   }
 
   #shadow-container * {
-    font-family: inherit !important;
     line-height: inherit;
     letter-spacing: inherit;
   }
@@ -113,7 +175,6 @@
     margin: 0;
     padding: 0;
     border: 0;
-    font-size: 100%;
     vertical-align: baseline;
   }
 }
@@ -162,18 +223,260 @@
   box-sizing: border-box;
 }
 
-/* Force consistent sizing for all elements */
-#shadow-container * {
-  font-size: inherit;
-  line-height: inherit;
-  font-weight: inherit;
-}
+/* Force consistent sizing for base elements (not artistic components) */
 
-/* Ensure buttons and inputs don't inherit weird styles */
-#shadow-container button,
+/* Ensure inputs and selects don't inherit weird styles */
 #shadow-container input,
 #shadow-container select {
-  font-family: inherit !important;
+  font-family: inherit;
   font-size: inherit;
   line-height: inherit;
+}
+
+/* ========================================
+   ARTISTIC DESIGN SYSTEM - CSS ANIMATIONS & COMPONENTS
+   ======================================== */
+
+/* CSS Keyframe Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(0.8); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+/* View Transition Classes */
+.fade-in {
+  opacity: 1;
+  transition: opacity 0.5s var(--ease-out);
+}
+
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out);
+}
+
+/* Artistic Component Classes */
+.mindful-card {
+  position: relative;
+  width: 520px;
+  min-height: 600px;
+  background-color: var(--c-sand);
+  border-radius: 2px;
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  text-align: center;
+  overflow: hidden;
+  animation: cardEnter 1s var(--ease-out) 0.3s forwards;
+  opacity: 0;
+}
+
+.corner-label {
+  position: absolute;
+  font-family: var(--f-sans);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--c-charcoal);
+  opacity: 0.6;
+}
+
+.corner-label.tl { top: 24px; left: 24px; }
+.corner-label.tr { top: 24px; right: 24px; }
+.corner-label.bl { bottom: 24px; left: 24px; }
+.corner-label.br { bottom: 24px; right: 24px; }
+
+.oval-window {
+  position: relative;
+  width: 220px;
+  height: 280px;
+  border-radius: 50% / 50%;
+  margin-bottom: 30px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 120%, var(--c-peach), var(--c-sand) 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.breath-orb {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4), transparent 60%);
+  transform: scale(0.8);
+  animation: breathe 6s ease-in-out infinite;
+}
+
+.header-text {
+  font-family: var(--f-sans);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--c-charcoal);
+  margin-bottom: 20px;
+  opacity: 0.8;
+  z-index: 2;
+}
+
+.quote-container {
+  position: relative;
+  z-index: 2;
+  max-width: 90%;
+  margin-bottom: 40px;
+}
+
+.quote-text {
+  font-family: var(--f-serif);
+  font-size: 26px;
+  line-height: 1.35;
+  color: var(--c-charcoal);
+  font-weight: 300;
+}
+
+.quote-text em {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  align-items: center;
+  z-index: 2;
+}
+
+.btn-artistic {
+  position: relative;
+  padding: 14px 32px;
+  font-family: var(--f-sans);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  width: 220px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100px;
+}
+
+.btn-primary-artistic {
+  background-color: var(--c-charcoal);
+  color: var(--c-sand);
+  border: 1px solid var(--c-charcoal);
+}
+
+.btn-primary-artistic:hover {
+  background-color: transparent;
+  color: var(--c-charcoal);
+}
+
+.btn-secondary-artistic {
+  background-color: transparent;
+  color: var(--c-charcoal);
+  border: 1px solid transparent;
+  opacity: 0.7;
+}
+
+.btn-secondary-artistic:hover {
+  opacity: 1;
+  letter-spacing: 2px;
+}
+
+.noise {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.05;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  z-index: 0;
+}
+
+.interstitial-overlay {
+  animation: fadeIn 1.2s var(--ease-out) forwards;
+}
+
+/* Minimized Timer - Artistic Theme */
+.minimized-timer {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background-color: var(--c-sand);
+  border-radius: 2px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  min-width: 180px;
+  overflow: hidden;
+  animation: cardEnter 0.6s var(--ease-out) forwards;
+  opacity: 0;
+}
+
+.timer-progress-track {
+  height: 3px;
+  width: 100%;
+  background-color: var(--c-peach-light);
+  overflow: hidden;
+}
+
+.timer-progress-bar {
+  height: 100%;
+  background-color: var(--c-charcoal);
+  transition: width 0.3s ease;
+}
+
+.timer-content {
+  padding: 20px 24px;
+  text-align: center;
+}
+
+.timer-label {
+  font-family: var(--f-sans);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--c-charcoal);
+  opacity: 0.6;
+}
+
+.timer-display {
+  font-family: var(--f-serif);
+  font-size: 36px;
+  font-weight: 300;
+  color: var(--c-charcoal);
+  margin: 8px 0 4px;
+  letter-spacing: 2px;
+}
+
+.timer-sublabel {
+  font-family: var(--f-sans);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--c-charcoal);
+  opacity: 0.4;
 }
